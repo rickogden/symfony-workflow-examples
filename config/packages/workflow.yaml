@@ -1,0 +1,3 @@
+imports:
+    - { resource: ../workflows/basic.yaml }
+    - { resource: ../workflows/crap.yaml }

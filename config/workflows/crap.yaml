@@ -1,0 +1,39 @@
+framework:
+    workflows:
+        beerglass_crap:
+            type: state_machine
+            marking_store:
+                type: single_state
+                arguments:
+                    - state
+            supports:
+                - App\Document\BeerGlass
+            places:
+                - clean
+                - filling
+                - full
+                - drinking
+                - dirty
+                - washing
+            transitions:
+                pour:
+                    from: clean
+                    to: filling
+                stop_pouring:
+                    from: filling
+                    to: full
+                drain_pour:
+                    from: full
+                    to: dirty
+                drink:
+                    from: full
+                    to: drinking
+                finish:
+                    from: drinking
+                    to: dirty
+                wash:
+                    from: dirty
+                    to: washing
+                cleaned:
+                    from: washing
+                    to: clean

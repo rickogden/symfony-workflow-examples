@@ -1,0 +1,28 @@
+framework:
+    workflows:
+        beerglass_basic:
+            type: state_machine
+            marking_store:
+                type: single_state
+                arguments:
+                    - state
+            supports:
+                - App\Document\BeerGlass
+            places:
+                - clean
+                - filling
+                - full
+                - partly_full
+                - empty
+                - drinking
+                - dirty
+                - washing
+            transitions:
+                pour:
+                    from: [clean, empty]
+                    to: [filling, dirty]
+                stop_filling:
+                    from: filling
+                    to: full
+                drink:
+                    from: []
