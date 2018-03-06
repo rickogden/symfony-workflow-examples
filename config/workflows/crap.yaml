@@ -1,6 +1,6 @@
 framework:
     workflows:
-        beerglass_crap:
+        beerglass_2:
             type: state_machine
             marking_store:
                 type: single_state

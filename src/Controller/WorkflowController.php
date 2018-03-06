@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Document\BeerGlass;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Workflow\Registry;
 
 class WorkflowController extends AbstractController
@@ -25,6 +25,7 @@ class WorkflowController extends AbstractController
 
     /**
      * WorkflowController constructor.
+     *
      * @param Registry $registry
      * @param DocumentManager $dm
      */
@@ -34,18 +35,20 @@ class WorkflowController extends AbstractController
         $this->dm = $dm;
     }
 
-
     /**
-     * @Route("/workflow", name="workflow", methods={"GET"})
+     * @Route("/workflow/", name="workflow", methods={"GET"})
      */
     public function index()
     {
         $workflows = [
             'beerglass_basic' => 'clean',
-            'beerglass_crap' => 'clean',
+            'beerglass_2' => 'clean',
+            'beerglass_complex' => 'clean',
+            'complex_events' => 'clean',
         ];
+
         return $this->render('workflow/index.html.twig', [
-            'workflows' => $workflows
+            'workflows' => $workflows,
         ]);
     }
 
@@ -55,7 +58,6 @@ class WorkflowController extends AbstractController
     public function createWorkflow(Request $request)
     {
         $workflowName = $request->request->get('workflow_name');
-       // $workflowDocumentClass = $request->request->get('workflow_document');
         $workflowStartingState = $request->request->get('state');
 
         $doc = new BeerGlass();
@@ -66,19 +68,23 @@ class WorkflowController extends AbstractController
         $this->dm->persist($doc);
         $this->dm->flush();
 
-        return $this->redirect($this->generateUrl('show_workflow',['workflowName' => $workflowName, 'id' => $doc->getId()]));
+        return $this->redirect($this->generateUrl('show_workflow', [
+            'workflowName' => $workflowName,
+            'id' => $doc->getId(),
+        ]));
     }
 
     /**
      * @param string $workflowName
-     * @param BeerGlass $beerGlass
+     * @param string id
      * @Route("/workflow/{workflowName}/{id}", name="show_workflow", methods={"GET"})
      */
     public function workflow(string $workflowName, string $id)
     {
         $beerGlass = $this->dm->find(BeerGlass::class, $id);
         $workflow = $this->registry->get($beerGlass, $workflowName);
-        return $this->render('workflow/show.html.twig',[
+
+        return $this->render('workflow/show.html.twig', [
             'workflowName' => $workflowName,
             'workflow' => $workflow,
             'beerGlass' => $beerGlass,
@@ -86,10 +92,7 @@ class WorkflowController extends AbstractController
     }
 
     /**
-     * @param string $workflowName
-     * @param string $transition
-     * @param BeerGlass $beerGlass
-     * @\Sensio\Bundle\FrameworkExtraBundle\Configuration\Route("/workflow/transition/{id}", methods={"POST"})
+     * @Route("/workflow/transition/{id}", methods={"POST"})
      */
     public function transition(string $id, Request $request)
     {
@@ -99,6 +102,8 @@ class WorkflowController extends AbstractController
         $workflow = $this->registry->get($beerGlass, $workflowName);
         $workflow->apply($beerGlass, $transition);
         $this->dm->flush();
-        return $this->redirect($this->generateUrl('show_workflow',['workflowName' => $workflowName, 'id' => $beerGlass->getId()]));
+
+        return $this->redirect($this->generateUrl('show_workflow',
+            ['workflowName' => $workflowName, 'id' => $beerGlass->getId()]));
     }
 }

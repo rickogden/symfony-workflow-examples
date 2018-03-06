@@ -1,6 +1,6 @@
 framework:
     workflows:
-        beerglass_complex:
+        complex_events:
             type: workflow
             marking_store:
                 type: multiple_state

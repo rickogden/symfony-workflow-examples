@@ -1,7 +1,6 @@
-# config/packages/workflow.yaml
 framework:
     workflows:
-        beerglass_basic:
+        beerglass_2_alternative:
             type: state_machine
             marking_store:
                 type: single_state
@@ -27,7 +26,7 @@ framework:
                     from: full
                     to: drinking
                 finish:
-                    from: drinking
+                    from: [full, drinking]
                     to: dirty
                 wash:
                     from: dirty

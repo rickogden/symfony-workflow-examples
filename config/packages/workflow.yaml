@@ -1,3 +1,6 @@
 imports:
     - { resource: ../workflows/basic.yaml }
     - { resource: ../workflows/crap.yaml }
+    - { resource: ../workflows/crap_alternative.yaml }
+    - { resource: ../workflows/complex.yaml}
+    - { resource: ../workflows/complex_events.yaml}
